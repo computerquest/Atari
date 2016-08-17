@@ -549,9 +549,9 @@ public class Main extends Application {
 
     static Canvas canvas = new Canvas();
     static Attari attari;
-
     //starter method for javafx
     public void start(Stage arg0) throws Exception {
+        System.out.println("the game has begun");
         attari = new Attari(canvas);
 
 /////////////////////////////////////nodes///////////////////////////////////////////
@@ -573,39 +573,11 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.setTitle("atari breakout");
         stage.show();
-
     }
 
     //main method
     public static void main(String[] args) {
 
-        //setting up a new thread
-       /* t = new Thread( () -> {
-            while (! Thread.currentThread().isInterrupted()) {
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        attari.moveBall();
-                    }
-                });
-                try {
-                    //default 25
-                    //the interval for the thread
-                    t.sleep(25);
-                } catch (InterruptedException exc) {
-                    break ;
-                }
-            }
-        });
-        t.start();*/
-        Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                attari.moveBall();
-            }
-        }));
-        fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
-        fiveSecondsWonder.play();
         launch();
     }
 }

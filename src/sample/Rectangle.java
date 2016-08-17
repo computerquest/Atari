@@ -29,7 +29,7 @@ class Rectangle {
         this.width = width;
         this.height = height;
         this.graphics = graphics;
-        bottom = y + height;
+        bottom = y - height;
 
         //to fill or not a rectangle
         //used so that you can use this for the slider and ball as well
@@ -110,19 +110,23 @@ class Rectangle {
 
     //will move the square
     public void move(double x, double y) {
-        this.y = y;
-        y = convertY(y);
+
+
+        double localY = convertY(y);
 
         //delete (image)
-        (graphics).clearRect(this.x, y, width, height + 1);
+        (graphics).clearRect(this.x, convertY(this.y), width + 1, height + 1);
+
+        this.y = y;
+        bottom = y - height;
 
         //check for the fill
         if (fill == true) {
             (graphics).setFill(fillColor);
-            (graphics).fillRect(x, y, width, height);
+            (graphics).fillRect(x, localY, width, height);
         } else {
             (graphics).setStroke(Color.RED);
-            (graphics).strokeRect(x, y, width, height);
+            (graphics).strokeRect(x, localY, width, height);
         }
 
         //redifine the fields

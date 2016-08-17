@@ -10,7 +10,7 @@ public class Slider {
     //y position of slide
     double y = 30;
     //height of slide
-    double height = 5;
+    double height = 10;
     //width of slide
     double width = 150;
     double contactX = 0;
@@ -24,7 +24,7 @@ public class Slider {
         centerX = beginX + 75;
         endX = centerX + 75;
         graphics = g;
-        slide = new Rectangle(graphics, beginX, y, width, height, Color.GREY, true);
+        slide = new Rectangle(graphics, beginX, y, width, height, Color.GREY, false);
     }
 
     //used for moving the slider
@@ -46,12 +46,14 @@ public class Slider {
     }
 
     //checks for where the ball hits on the slider
-    public double hit(double x, double inputWidth, double y) {
+    public double hit(double x, double endX, double y, double bottom) {
         //default to say false
+
+        slide.reDraw();
 
         //checks the edges and hit level
         //if the ball is at the slider
-        if (y >= this.y & y <= this.y + height & (x >= beginX & x <= endX | x + width >= beginX & x + width < endX)) {
+        if ((bottom <= this.y & bottom >= (this.y - height) && ((x >= this.beginX & x <= this.endX) | (endX >= this.beginX & endX <= this.endX)))) {//(y >= this.y & y <= this.y + height & (x >= beginX & x <= endX | x + width >= beginX & x + width < endX)) {
             //subtract centerX from the xBall to get where it hits
             return x - centerX;
         }
