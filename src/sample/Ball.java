@@ -9,79 +9,74 @@ import java.util.Random;
 //need to switch the forward boolean because I have not been doing that
 //need to switch all the measurements in slider and ball to normal datapoints instead of having them pre prepared for canvas
 public class Ball {
-    double speed = -.4;
-    //movement of x
-    double slope;
-    //position of x for ball
-    double x = 330;
-    //position of y for ball
-    double y = 50; // is the top of the ball
-    //height of ball
+    DataPoint centerPos = new DataPoint(330, 100); //drawing coordinates
     int height = 31;
-    //width of ball
     int width = 31;
-    //speed of x
-    double speedX = .04;
-    Rectangle rectangle;
+    Rectangle rectangle; //the visual ball
     GraphicsContext graphics;
-    double endX = x + width;
-    double centerX = x + (.5 * width);
-    double bottom = y - height;
-    LineSegment segment;
+    double endX = centerPos.x + width; // the right x of the ball
+    double centerX = centerPos.x + (.5 * width); //center coordinate of x
+    double bottom = centerPos.y - height; //the bottom of the ball
+    LineSegment segment; // used for movement is always based on the drawing coordinates
     boolean forward; // if forward the x is going up by one
-    DataPoint currentCorner = new DataPoint(x, y);
-
-    double updateRate = 5;
+    DataPoint currentCorner = new DataPoint(centerPos.x, centerPos.y); // used for collision
+    double updateRate = 5; // rate that the x will go up by
 
     //i need an update all movement variables because i feel like i keep forgetting to do that to all of them
     public Ball(GraphicsContext context) {
         Random r = new Random();
-        segment = new LineSegment(x, y, r.nextInt((int) Math.round(750 - x)) + x, r.nextInt((int) Math.round(400 - y)) + y);
-        currentCornerCalc();
+        segment = new LineSegment(centerPos.x, centerPos.y, r.nextInt(750), r.nextInt((int) Math.round(400 - centerPos.y)) + centerPos.y);
+
+        if (segment.slope > 0) {
+            forward = true;
+        } else {
+            forward = false;
+        }
+
         currentCornerCalc();
         forward = true;
         graphics = context;
-        rectangle = new Rectangle(graphics, x, y, width, height, Color.GREY, true);
+        rectangle = new Rectangle(graphics, centerPos.x, centerPos.y, width, height, Color.GREY, true);
     }
 
     //calculate slope
     public void onSliderContact(double posOnSlider, double sliderX) {
         //if contact x has a hit
         //calculate slope
-        updateRate = Math.abs(posOnSlider / 10);
+        updateRate = 1 + Math.abs(posOnSlider / 10);
         double newAngle = Math.abs(10 * (75 / posOnSlider));
         if (newAngle > 90) {
             newAngle = 80;
         }
 
-        segment = new LineSegment(currentCorner.x, currentCorner.y, currentCorner.x + posOnSlider, Math.tan(Math.toRadians(newAngle)) * posOnSlider);
+        double newX = centerPos.x + posOnSlider;
+        double newY = Math.tan(Math.toRadians(newAngle)) * Math.abs(posOnSlider) + centerPos.y;
+        segment = new LineSegment(centerPos.x, centerPos.y, newX, newY);
 
-        if (posOnSlider > 0) {
+        if (posOnSlider < 0) {
             forward = false;
         } else {
             forward = true;
         }
 
-        double oldY = currentCorner.y;
         currentCornerCalc();
 
-        updateSegmentIntercept(oldY);
         move();
     }
 
     public void currentCornerCalc() {
         if (forward == false & segment.slope > 0) {
-            currentCorner.x = x;
-            currentCorner.y = y - height;
+            currentCorner.x = centerPos.x;
+            currentCorner.y = centerPos.y - height;
         } else if (forward == true & segment.slope > 0) {
-            currentCorner.x = x + width;
-            currentCorner.y = y;
+            currentCorner.x = centerPos.x + width;
+            currentCorner.y = centerPos.y;
         } else if (forward == false & segment.slope < 0) {
-            currentCorner.x = x;
-            currentCorner.y = y;
+            currentCorner.x = centerPos.x;
+            currentCorner.y = centerPos.y;
         } else if (forward == true & segment.slope < 0) {
-            currentCorner.x = x + width;
-            currentCorner.y = y - height;
+            currentCorner.x = centerPos.x + width;
+            currentCorner.y = centerPos.y - height;
         }
     }
 
@@ -100,13 +95,12 @@ public class Ball {
         double adjacentOther = (Math.abs(yBounds - currentCorner.y));
         double oppositeOther = Math.tan(angle) * adjacentOther;
 
-        segment = new LineSegment(currentCorner.x, currentCorner.y, beginX, slope > 0 ? currentCorner.y + adjacent : currentCorner.y - adjacent);
+        //segment = new LineSegment(centerPos.x, centerPos.y, beginX, segment.slope > 0 ? centerPos.y+adjacent: centerPos.y-adjacent);
+        segment = new LineSegment(centerPos.x, centerPos.y, beginX, !forward ? centerPos.y + adjacent : centerPos.y - adjacent);
         forward = forward ? false : true;
 
-        double oldY = currentCorner.y;
         currentCornerCalc();
 
-        updateSegmentIntercept(oldY);
         move();
     }
 
@@ -126,55 +120,44 @@ public class Ball {
         if ((segment.slope > 0 & forward | segment.slope < 0 & !forward)) { // bounce from top
             newX = yBounds - oppositeOther;
         } else {
-            newX = y + oppositeOther;
+            newX = centerPos.y + oppositeOther;
         }
 
+        segment = new LineSegment(centerPos.x, centerPos.y, forward ? centerPos.x + adjacent : centerPos.x - adjacent, beginY);
 
-        segment = new LineSegment(currentCorner.x, currentCorner.y, forward ? currentCorner.x + adjacent : currentCorner.x - adjacent, beginY);
-
-        double oldY = currentCorner.y;
         currentCornerCalc();
 
-        updateSegmentIntercept(oldY);
         move();
     }
 
-    public void updateSegmentIntercept(double y) {
-        segment.intercept = segment.intercept + (currentCorner.y - y);
-    }
 
     public double toCenteralCoordinatesX(double x) {
-        return x + (this.x - currentCorner.x);
+        return x + (centerPos.x - currentCorner.x);
     }
 
     public double toCenteralCoordinateY(double y) {
-        return y + (this.y - currentCorner.y);
+        return y + (centerPos.y - currentCorner.y);
     }
 
     //?
     public void move() {
-        if (segment.slope == 0) {
-            segment.slope = .01;
-            segment.calcIntercept();
-        }
+        double newX = centerPos.x + (forward ? updateRate : updateRate * -1); //(toCenteralCoordinatesX(x) + (forward ? updateRate: updateRate*-1));
+        double segmentYAt = segment.yAt(newX);
+        System.out.println("we are moving the x to " + newX + " and the y to " + segmentYAt);
+        rectangle.move(newX, segmentYAt);
 
-        double newX = x + +(forward ? updateRate : updateRate * -1); //(toCenteralCoordinatesX(x) + (forward ? updateRate: updateRate*-1));
-        double segmentYAt = segment.yAt(currentCorner.x + (forward ? updateRate : updateRate * -1));
-        double newY = toCenteralCoordinateY(segmentYAt);
-        System.out.println("we are moving the x to " + newX + " and the y to " + newY);
-        rectangle.move(newX, newY);
-
-        updateVariables(newX, newY);
+        updateVariables(newX, segmentYAt);
     }
 
     public void updateVariables(double x, double y) {
-        this.x = x;
-        this.y = y;
-        endX = this.x + width;
-        bottom = this.y - height;
-        centerX = this.x + (.5 * width);
+        centerPos.x = x;
+        centerPos.y = y;
+        endX = centerPos.x + width;
+        bottom = centerPos.y - height;
+        centerX = centerPos.x + (.5 * width);
         currentCornerCalc(); //this only updates the value for the corner should be the same corner
     }
+
     //used to move the ball does all the most compilated method
     /*public void moveBall(GraphicsContext graphics) {
         //get the value on the slider

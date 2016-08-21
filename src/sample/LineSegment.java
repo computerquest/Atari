@@ -21,8 +21,8 @@ public class LineSegment {
     }
 
     public LineSegment(double x, double y, double xOne, double yOne) {
-        begining = new DataPoint(x, y);
-        end = new DataPoint(xOne, yOne);
+        begining = new DataPoint(x, y);//x <= xOne ? new DataPoint(x, y): new DataPoint(xOne, yOne);
+        end = new DataPoint(xOne, yOne);//x >= xOne ? new DataPoint(x, y): new DataPoint(xOne, yOne);
 
         calcSlope();
         calcIntercept();

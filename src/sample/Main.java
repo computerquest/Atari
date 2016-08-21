@@ -577,7 +577,6 @@ public class Main extends Application {
 
     //main method
     public static void main(String[] args) {
-
         launch();
     }
 }

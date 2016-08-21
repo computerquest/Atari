@@ -43,7 +43,6 @@ public class Attari {
     }
 
     public void moveBall() {
-        System.out.println("moving the ball right now");
         ball.move();
         collisionDetection();
     }
@@ -54,7 +53,7 @@ public class Attari {
     }
 
     public void collisionDetection() {
-        double sliderContact = slider.hit(ball.x, ball.endX, ball.y, ball.bottom);
+        double sliderContact = slider.hit(ball.centerPos.x, ball.endX, ball.centerPos.y, ball.bottom);
 
         if (sliderContact != -100) {
             System.out.println("hit the slider");
@@ -69,18 +68,21 @@ public class Attari {
             interval.stop();
         }
 
-        double beginX = ball.x;
+        double beginX = ball.centerPos.x;
         double endX = ball.endX;
-        double topY = ball.y;
+        double topY = ball.centerPos.y;
         double bottomY = ball.bottom;
 
-        if (ball.endX > canvas.getWidth() | ball.x < 0) {
+        if (ball.endX > canvas.getWidth() | ball.centerPos.x < 0) {
             System.out.println("hit side");
-            ball.onSideContact(canvas.getWidth(), canvas.getHeight());
-        }
 
-        if (ball.y < 0 | ball.y > canvas.getHeight()) {
+            ball.centerPos.x = ball.endX > canvas.getWidth() ? canvas.getWidth() - ball.width : 0;
+            ball.centerPos.y = ball.segment.yAt(ball.centerPos.x);
+
+            ball.onSideContact(canvas.getWidth(), canvas.getHeight());
+        } else if (ball.centerPos.y < 0 | ball.centerPos.y > canvas.getHeight()) {
             System.out.println("hit top");
+            ball.centerPos.y = canvas.getHeight();
             ball.onTopContact(canvas.getWidth(), canvas.getHeight());
         }
 
@@ -96,8 +98,8 @@ public class Attari {
                 if the bottom is inside the top of the brick then it is coming from the top
                 if the brick is getting hit by only one side and the y
                  */
-                double cornerXdif = ball.x - ball.currentCorner.x; //probably don't need this one
-                double cornerYdif = ball.y - ball.currentCorner.y;
+                double cornerXdif = ball.centerPos.x - ball.currentCorner.x; //probably don't need this one
+                double cornerYdif = ball.centerPos.y - ball.currentCorner.y;
 
                 double width = ball.width;
 
@@ -115,24 +117,24 @@ public class Attari {
                 //these guys work really well but are part of a bug where if it hits to segment is horizontal because it just updated for the last one
                 boolean yChecker = (yAtN <= currentNode.y & yAtN >= currentNode.y - currentNode.height) | (yAtL <= currentNode.y & yAtL >= currentNode.y - currentNode.height) |
                         (yAtNEnd <= currentNode.y & yAtNEnd >= currentNode.y - currentNode.height) | (yAtEndL <= currentNode.y & yAtEndL >= currentNode.y - currentNode.height);
-                yChecker = (ball.y <= currentNode.y & ball.y >= currentNodeEndY) | (ball.bottom <= currentNode.y & ball.bottom >= currentNodeEndY);
-                boolean xChecker = (ball.x >= currentNode.x & ball.x <= currentNode.x + currentNode.width & ball.endX >= currentNode.x & ball.endX <= currentNode.x + currentNode.width);
+                yChecker = (ball.centerPos.y <= currentNode.y & ball.centerPos.y >= currentNodeEndY) | (ball.bottom <= currentNode.y & ball.bottom >= currentNodeEndY);
+                boolean xChecker = (ball.centerPos.x >= currentNode.x & ball.centerPos.x <= currentNode.x + currentNode.width & ball.endX >= currentNode.x & ball.endX <= currentNode.x + currentNode.width);
 
                 //this was is super easy and works well except that current corner can ignore somethings
                 double xDif = 0;
                 double yDif = 0;
                 if (ball.segment.slope > 0 & ball.forward == true) {
                     xDif = Math.abs(ball.endX - currentNode.x);
-                    yDif = Math.abs(ball.y - currentNode.bottom);
+                    yDif = Math.abs(ball.centerPos.y - currentNode.bottom);
                 } else if (ball.segment.slope < 0 & ball.forward == true) {
                     xDif = Math.abs(ball.endX - currentNode.x);
                     yDif = Math.abs(ball.bottom - currentNode.y);
                 } else if (ball.segment.slope < 0 & ball.forward == false) {
-                    xDif = Math.abs(ball.x - currentNode.x + currentNode.width);
-                    yDif = Math.abs(ball.y - currentNode.y - currentNode.height);
+                    xDif = Math.abs(ball.centerPos.x - currentNode.x + currentNode.width);
+                    yDif = Math.abs(ball.centerPos.y - currentNode.y - currentNode.height);
                 } else if (ball.segment.slope > 0 & ball.forward == false) {
-                    xDif = Math.abs(ball.x - currentNode.x + currentNode.width);
-                    yDif = Math.abs(ball.y - currentNode.y);
+                    xDif = Math.abs(ball.centerPos.x - currentNode.x + currentNode.width);
+                    yDif = Math.abs(ball.centerPos.y - currentNode.y);
                 }
 
                 if (xDif < yDif) {//if (yChecker & !xChecker) {
