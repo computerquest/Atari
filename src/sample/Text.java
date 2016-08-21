@@ -15,9 +15,6 @@ class Text {
     public Text(GraphicsContext graphics, int width, int height, String message) {
         graphics.setFont(new Font("ARAIL", 50));
         graphics.setFill(Color.BLUE);
-        System.out.println("party party party");
-        //this.x = x;
-        //this.y = y;
         this.height = height;
         this.width = width;
         this.message = message;
@@ -27,7 +24,7 @@ class Text {
     }
 
     public void update(String message) {
-        graphics.clearRect(338, 0, 100, 50);
+        graphics.clearRect(x, y, 100, 50);
         graphics.setFill(Color.BLUE);
         graphics.fillText(message, width, height);
     }

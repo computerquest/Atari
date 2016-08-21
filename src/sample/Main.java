@@ -545,29 +545,22 @@ public class Main extends Application {
         //move ball
         ball.move(ball, xBall, yBall);
     }*/
-    static Thread t;
 
-    static Canvas canvas = new Canvas();
-    static Attari attari;
     //starter method for javafx
     public void start(Stage arg0) throws Exception {
         System.out.println("the game has begun");
-        attari = new Attari(canvas);
+        Attari attari = new Attari();
 
-/////////////////////////////////////nodes///////////////////////////////////////////
         Stage stage = new Stage();
         HBox hbox = new HBox();
 
+        hbox.getChildren().add(attari.canvas);
+
+        //this makes the slider follow the mouse
         attari.canvas.setOnMouseMoved(e -> {
             attari.moveSlider(e.getX());
         });
-////////////////////generate elements
-        attari.setUp();
-///////////////////////////////////////add elements///////////////////////////////////////
-        hbox.getChildren().add(attari.canvas);
 
-//////////////////////////////////////////////////events/////////////////////////////
-/////////////////////////////////////////final elements//////////////////////////////////
         Scene scene = new Scene(hbox, 750, 400);
 
         stage.setScene(scene);

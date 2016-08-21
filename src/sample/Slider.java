@@ -13,12 +13,11 @@ public class Slider {
     double height = 10;
     //width of slide
     double width = 150;
-    double contactX = 0;
-    double centerX = 0;
+    double centerX = 0; //the center x value
     Rectangle slide;
-    double endX;
+    double endX; //x value for the end of the slider
     GraphicsContext graphics;
-    double centerXPos = beginX + 75;
+    double centerXPos = beginX + 75; //center position of the slider
 
     public Slider(GraphicsContext g) {
         centerX = beginX + 75;
@@ -46,7 +45,7 @@ public class Slider {
     }
 
     //checks for where the ball hits on the slider
-    public double hit(double x, double endX, double y, double bottom) {
+    public double hit(double x, double endX, double bottom) {
         //default to say false
 
         slide.reDraw();

@@ -17,7 +17,7 @@ class Rectangle {
     //to see if there is a fill or not
     boolean fill;
     GraphicsContext graphics;
-    double bottom;
+    double bottom; //ybottom of the rectnalge
     Color fillColor;
 
     //used to create a rectangle object
@@ -33,8 +33,6 @@ class Rectangle {
 
         //to fill or not a rectangle
         //used so that you can use this for the slider and ball as well
-
-
         if (fillTF == true) {
             graphics.setFill(fill);
             this.fillColor = fill;
@@ -48,40 +46,6 @@ class Rectangle {
         }
     }
 
-    //the hit detection system
-    /*public LinkedList<Rectangle> hit(Rectangle rectangle, LinkedList<Rectangle> rectangleArray) {
-        System.out.println("we are checking");
-        LinkedList<Rectangle> answer = new LinkedList();
-
-        //this will do a general check to eliminate easy possibilities
-        if(rectangle.y <= 210) {
-            //this will go through the options
-            for(int i = 0, x = 0;  i < rectangleArray.size() && x < 2; i++) {
-                //to test if it is a hit
-                //rectangle.x >= this.rectangle.get(i).x-40 && rectangle.x <= this.rectangle.get(i).x + 40 && rectangle.x != -1 && rectangle.y+30 >= this.rectangle.get(i).y && rectangle.y <= this.rectangle.get(i).y+26
-                if(rectangle.x >= rectangleArray.get(i).x-40 && rectangle.x <= rectangleArray.get(i).x + 40 && rectangle.x != -1 && rectangle.y+30 >= rectangleArray.get(i).y && rectangle.y <= rectangleArray.get(i).y+26){
-                    //System.out.println("r "+rectangle.x +" and "+ rectangle.y+30);
-                    //System.out.println("ra "+ rectangleArray.get(i).x +" and "+ rectangleArray.get(i).y);
-
-                    //if this is the first
-                    if(x == 0) {
-                        answer.add(rectangleArray.get(i));
-
-                        //check the one next to it to check for it hitting 2
-                        if(rectangle.x >= rectangleArray.get(i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i+1).x-40 && rectangle.x <= rectangleArray.get(i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i+1).x + 40 && rectangle.y+30 >= rectangleArray.get(i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i+1).y && rectangle.y >= rectangleArray.get(i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i+1).y+26){//-26 && rectangle.y <= rectangleArray.get(i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i+1).y+26) {
-                            answer.add(rectangleArray.get(i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i> rectangleArray.size()-1? 0: i+1));
-                            x = 2;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-        //return the array for the 1(2) blocks
-        return answer;
-    }*/
-
     //used to get rid of rectangles
     public void delete() {
         //erase the rectangle
@@ -94,6 +58,7 @@ class Rectangle {
         height = -1;
     }
 
+    //converts the x to use coordinates like canvas (0 is top of the canvas)
     public double convertY(double y) {
         return graphics.getCanvas().getHeight() - y;
     }
@@ -110,8 +75,6 @@ class Rectangle {
 
     //will move the square
     public void move(double x, double y) {
-
-
         double localY = convertY(y);
 
         //delete (image)

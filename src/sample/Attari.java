@@ -12,26 +12,23 @@ import javafx.util.Duration;
 import java.util.LinkedList;
 import java.util.Random;
 
-//so i need teo find the placement of the y at the x sid eof the rectangle and then i do the same for the enteirety of the rest of the rectangle and that will give me where it hit
-//at the x position of the rectangle the y would have to be within bounds
-//we would use forward and backward to first judge what side hit first
-//the top and botton will be determined in a similar fashion after it is determined if the sides are being hit
-//i could also use the direction to do the trig for the collisions
 public class Attari {
-    LinkedList<Rectangle> rectangle = new LinkedList();
+    LinkedList<Rectangle> rectangle = new LinkedList(); //all the rectangles
     Ball ball;
     Slider slider;
     GraphicsContext graphics;
-    Text text;
+    Text text; //score
     Canvas canvas; // need to make everything use canvas and get rid of canvas in the other classes
-    boolean end = false;
-    Timeline interval = new Timeline();
-    public Attari(Canvas input) {
+    Timeline interval = new Timeline(); //the interval used to move the ball
+
+    public Attari() {
         canvas = new Canvas(750, 400);
         graphics = canvas.getGraphicsContext2D();
         slider = new Slider(graphics);
         ball = new Ball(graphics);
+        setUp();
 
+        //starts a new thread to move the ball every x millis
         interval = new Timeline(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -53,7 +50,7 @@ public class Attari {
     }
 
     public void collisionDetection() {
-        double sliderContact = slider.hit(ball.centerPos.x, ball.endX, ball.centerPos.y, ball.bottom);
+        double sliderContact = slider.hit(ball.centerPos.x, ball.endX, ball.bottom);
 
         if (sliderContact != -100) {
             System.out.println("hit the slider");
@@ -63,8 +60,8 @@ public class Attari {
             return;
         }
 
+        //this will end the game
         if (ball.bottom <= 0) {
-            end = true;
             interval.stop();
         }
 
@@ -73,21 +70,25 @@ public class Attari {
         double topY = ball.centerPos.y;
         double bottomY = ball.bottom;
 
+        //hitting the x border
         if (ball.endX > canvas.getWidth() | ball.centerPos.x < 0) {
             System.out.println("hit side");
 
             ball.centerPos.x = ball.endX > canvas.getWidth() ? canvas.getWidth() - ball.width : 0;
             ball.centerPos.y = ball.segment.yAt(ball.centerPos.x);
 
-            ball.onSideContact(canvas.getWidth(), canvas.getHeight());
-        } else if (ball.centerPos.y < 0 | ball.centerPos.y > canvas.getHeight()) {
+            ball.onSideContact();
+        }
+        //hitting the y border
+        else if (ball.centerPos.y < 0 | ball.centerPos.y > canvas.getHeight()) {
             System.out.println("hit top");
             ball.centerPos.y = canvas.getHeight();
-            ball.onTopContact(canvas.getWidth(), canvas.getHeight());
+            ball.onTopContact();
         }
 
+        //goes through all the rectangles and looks for a collision
         for (int i = 0; i < rectangle.size(); i++) {
-            Rectangle currentNode = rectangle.get(i);
+            Rectangle currentNode = rectangle.get(i); //current rectangle being viewed
             if (((beginX >= currentNode.x & beginX <= currentNode.x + currentNode.width) | (endX >= currentNode.x & endX <= currentNode.x + currentNode.width))
                     && ((topY >= currentNode.bottom & topY <= currentNode.y) | (bottomY >= currentNode.bottom & bottomY <= currentNode.y))) {
                 System.out.println("hit brick");
@@ -114,7 +115,7 @@ public class Attari {
                 double currentNodeEndY = currentNode.y - currentNode.height;
 
 
-                //these guys work really well but are part of a bug where if it hits to segment is horizontal because it just updated for the last one
+                //these guys work really well but are more difficult
                 boolean yChecker = (yAtN <= currentNode.y & yAtN >= currentNode.y - currentNode.height) | (yAtL <= currentNode.y & yAtL >= currentNode.y - currentNode.height) |
                         (yAtNEnd <= currentNode.y & yAtNEnd >= currentNode.y - currentNode.height) | (yAtEndL <= currentNode.y & yAtEndL >= currentNode.y - currentNode.height);
                 yChecker = (ball.centerPos.y <= currentNode.y & ball.centerPos.y >= currentNodeEndY) | (ball.bottom <= currentNode.y & ball.bottom >= currentNodeEndY);
@@ -139,10 +140,10 @@ public class Attari {
 
                 if (xDif < yDif) {//if (yChecker & !xChecker) {
                     System.out.println("hit brick side");
-                    ball.onSideContact(canvas.getWidth(), canvas.getHeight());
+                    ball.onSideContact();
                 } else {//if (yChecker & xChecker) {
                     System.out.println("hit brick top");
-                    ball.onTopContact(canvas.getWidth(), canvas.getHeight());
+                    ball.onTopContact();
                 }
 
                 rectangle.get(i).delete();
@@ -152,6 +153,7 @@ public class Attari {
         }
     }
 
+    //this sets up all the blocks in the begginning
     public void setUp() {
         //rectangle.add(new Rectangle(graphics, 330, 340, 40, 26, true));
         text = new Text(graphics, 338, 50, "0");
