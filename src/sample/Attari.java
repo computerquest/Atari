@@ -17,7 +17,8 @@ public class Attari {
     Ball ball;
     Slider slider;
     GraphicsContext graphics;
-    Text text; //score
+    Text scoreText; //score value
+    double score = 0; //score value
     Canvas canvas; // need to make everything use canvas and get rid of canvas in the other classes
     Timeline interval = new Timeline(); //the interval used to move the ball
 
@@ -29,7 +30,7 @@ public class Attari {
         setUp();
 
         //starts a new thread to move the ball every x millis
-        interval = new Timeline(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
+        interval = new Timeline(new KeyFrame(Duration.millis(300), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 moveBall();
@@ -146,6 +147,8 @@ public class Attari {
                     ball.onTopContact();
                 }
 
+                scoreText.update(Double.toString((score += 30)));
+
                 rectangle.get(i).delete();
                 ball.rectangle.reDraw();
                 return; //i could add a que for the ball for the udated variables so they dont change until all the collisions are reported to fix the bug
@@ -156,7 +159,7 @@ public class Attari {
     //this sets up all the blocks in the begginning
     public void setUp() {
         //rectangle.add(new Rectangle(graphics, 330, 340, 40, 26, true));
-        text = new Text(graphics, 338, 50, "0");
+        scoreText = new Text(graphics, 338, 50, "0.0");
         //starting line for drawing
         int y = 340;
         //the initial color (will be changed by row)
