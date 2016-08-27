@@ -12,6 +12,12 @@ import javafx.util.Duration;
 import java.util.LinkedList;
 import java.util.Random;
 
+/*GOALS
+Momentum on ball
+    adds another update rate for each contact not slider
+Slider velocity
+    a multiplier on the slider based on the pixels it moves a second
+ */
 public class Attari {
     LinkedList<Rectangle> rectangle = new LinkedList(); //all the rectangles
     Ball ball;
@@ -29,15 +35,18 @@ public class Attari {
         ball = new Ball(graphics);
         setUp();
 
+        double time = 500;
         //starts a new thread to move the ball every x millis
-        interval = new Timeline(new KeyFrame(Duration.millis(300), new EventHandler<ActionEvent>() {
+        interval = new Timeline(new KeyFrame(Duration.millis(time), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 moveBall();
+                slider.velocity = Math.abs(slider.lastPos.x - slider.beginX) / time;
             }
         }));
         interval.setCycleCount(Timeline.INDEFINITE);
         interval.play();
+        interval.setRate(2);
     }
 
     public void moveBall() {
@@ -56,13 +65,14 @@ public class Attari {
         if (sliderContact != -100) {
             System.out.println("hit the slider");
             //need to get the hit position on the slider based on the current corner of the ball
-            ball.onSliderContact(sliderContact, slider.centerXPos);
+            ball.onSliderContact(sliderContact, slider.velocity);
             ball.move();
             return;
         }
 
         //this will end the game
         if (ball.bottom <= 0) {
+            scoreText.update("Game Over. " + Double.toString(score));
             interval.stop();
         }
 
@@ -77,23 +87,68 @@ public class Attari {
 
             ball.centerPos.x = ball.endX > canvas.getWidth() ? canvas.getWidth() - ball.width : 0;
             ball.centerPos.y = ball.segment.yAt(ball.centerPos.x);
+            ball.updateRate = ball.updateRate + .1 > 7 ? 7 : ball.updateRate + .1;
 
             ball.onSideContact();
         }
         //hitting the y border
         else if (ball.centerPos.y < 0 | ball.centerPos.y > canvas.getHeight()) {
             System.out.println("hit top");
+
             ball.centerPos.y = canvas.getHeight();
+            ball.updateRate = ball.updateRate + .1 > 7 ? 7 : ball.updateRate + .1;
+
             ball.onTopContact();
         }
 
+        boolean hitSomething = false;
         //goes through all the rectangles and looks for a collision
         for (int i = 0; i < rectangle.size(); i++) {
             Rectangle currentNode = rectangle.get(i); //current rectangle being viewed
             if (((beginX >= currentNode.x & beginX <= currentNode.x + currentNode.width) | (endX >= currentNode.x & endX <= currentNode.x + currentNode.width))
                     && ((topY >= currentNode.bottom & topY <= currentNode.y) | (bottomY >= currentNode.bottom & bottomY <= currentNode.y))) {
                 System.out.println("hit brick");
-                
+                ball.updateRate = ball.updateRate + .1 > 7 ? 7 : ball.updateRate + .1;
+
+                //testing this out
+                /*if(!hitSomething) {
+                    double cornerXdif = ball.centerPos.x - ball.currentCorner.x; //probably don't need this one
+                    double cornerYdif = ball.centerPos.y - ball.currentCorner.y;
+
+                    double width = ball.width;
+
+                    double yAt = ball.segment.yAt(currentNode.x);
+                    double yAtEnd = ball.segment.yAt(currentNode.x + currentNode.width);
+
+                    double yAtN = yAt; // yat the left side
+                    double yAtL = yAt - ball.height; //endy on the left side
+                    double yAtNEnd = yAtEnd; // yat the end
+                    double yAtEndL = yAtEnd - ball.height; // endy on the end
+
+                    double currentNodeEndY = currentNode.y - currentNode.height;
+
+                    boolean yChecker = (ball.centerPos.y <= currentNode.y & ball.centerPos.y >= currentNodeEndY) | (ball.bottom <= currentNode.y & ball.bottom >= currentNodeEndY);
+                    boolean xChecker = (ball.centerPos.x >= currentNode.x & ball.centerPos.x <= currentNode.x + currentNode.width & ball.endX >= currentNode.x & ball.endX <= currentNode.x + currentNode.width);
+
+                    if (yChecker & !xChecker) {//(xDif < yDif) {
+                        System.out.println("hit brick side");
+                        ball.onSideContact();
+                    } else if (yChecker & xChecker) {//else {//
+                        System.out.println("hit brick top");
+                        ball.onTopContact();
+                    }
+
+                    scoreText.update(Double.toString((score += 30)));
+
+                    rectangle.get(i).delete();
+                    ball.rectangle.reDraw();
+
+                    hitSomething = true;
+                } else {
+                    rectangle.get(i).delete();
+                }*/
+
+                //PROVEN WORKS
                 //need to find if it is hitting top or side
                 //i think i need a on bottom contact for when it is hitting bricks from the top
                 /*
@@ -139,10 +194,10 @@ public class Attari {
                     yDif = Math.abs(ball.centerPos.y - currentNode.y);
                 }
 
-                if (xDif < yDif) {//if (yChecker & !xChecker) {
+                if (xDif < yDif) {//(yChecker & !xChecker) {//
                     System.out.println("hit brick side");
                     ball.onSideContact();
-                } else {//if (yChecker & xChecker) {
+                } else {//if (yChecker & xChecker) {//else {//
                     System.out.println("hit brick top");
                     ball.onTopContact();
                 }
@@ -151,7 +206,7 @@ public class Attari {
 
                 rectangle.get(i).delete();
                 ball.rectangle.reDraw();
-                return; //i could add a que for the ball for the udated variables so they dont change until all the collisions are reported to fix the bug
+                return; //i could add a que for the ball for the udated variables so they dont change until all the collisions are reported to fix the bug*/
             }
         }
     }

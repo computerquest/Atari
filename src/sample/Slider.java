@@ -18,6 +18,8 @@ public class Slider {
     double endX; //x value for the end of the slider
     GraphicsContext graphics;
     double centerXPos = beginX + 75; //center position of the slider
+    DataPoint lastPos = new DataPoint(beginX, y);
+    double velocity = 0;
 
     public Slider(GraphicsContext g) {
         centerX = beginX + 75;

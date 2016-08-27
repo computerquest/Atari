@@ -41,11 +41,11 @@ public class Ball {
     }
 
     //calculate slope
-    public void onSliderContact(double posOnSlider, double sliderX) {
+    public void onSliderContact(double posOnSlider, double velocity) {
         //if contact x has a hit
         //calculate slope
-        updateRate = 1 + Math.abs(posOnSlider / 10); //changing the refresh
-        double newAngle = Math.abs(10 * (75 / posOnSlider)); //cahgnes the angle of the ball so that further on the end it hits the lower the angle
+        updateRate = 1 + Math.abs(posOnSlider / 10) + velocity < 7 ? 1 + Math.abs(posOnSlider / 10) + velocity : 7; //changing the refresh
+        double newAngle = Math.abs(10 * (75 / posOnSlider)); //changes the angle of the ball so that further on the end it hits the lower the angle
 
         //makes sure it isn't to big
         if (newAngle > 90) {
