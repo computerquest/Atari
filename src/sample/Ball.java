@@ -6,8 +6,7 @@ import javafx.scene.paint.Color;
 import java.util.LinkedList;
 import java.util.Random;
 
-//need to switch the forward boolean because I have not been doing that
-//need to switch all the measurements in slider and ball to normal datapoints instead of having them pre prepared for canvas
+//somewhere in the contact methods there is one whre it makes the slope 31 because the segment.beginning.x is not working correctly
 public class Ball {
     DataPoint centerPos = new DataPoint(330, 100); //drawing coordinates
     int height = 31;
@@ -44,7 +43,8 @@ public class Ball {
     public void onSliderContact(double posOnSlider, double velocity) {
         //if contact x has a hit
         //calculate slope
-        updateRate = 1 + Math.abs(posOnSlider / 10) + velocity < 7 ? 1 + Math.abs(posOnSlider / 10) + velocity : 7; //changing the refresh
+        updateRate = 1 + Math.abs(posOnSlider / 10) + velocity < 15 ? 1 + Math.abs(posOnSlider / 10) + velocity : 15; //changing the refresh
+
         double newAngle = Math.abs(10 * (75 / posOnSlider)); //changes the angle of the ball so that further on the end it hits the lower the angle
 
         //makes sure it isn't to big
@@ -53,6 +53,10 @@ public class Ball {
         }
 
         segment = new LineSegment(centerPos.x, centerPos.y, centerPos.x + posOnSlider, Math.tan(Math.toRadians(newAngle)) * Math.abs(posOnSlider) + centerPos.y);
+        if (segment.slope > 10) {
+            updateRate = 10 * updateRate < 3.5 ? 10 * updateRate : 3.5;
+            segment.slope /= 10;
+        }
 
         //sets forward or not
         if (posOnSlider < 0) {
@@ -88,6 +92,10 @@ public class Ball {
 
         //changes slope and direction
         segment = new LineSegment(centerPos.x, centerPos.y, segment.begining.x, (segment.slope > 0 & forward) | (segment.slope < 0 & !forward) ? centerPos.y + adjacent : centerPos.y - adjacent);
+        if (segment.slope > 10) {
+            updateRate = 10 * updateRate < 3.5 ? 10 * updateRate : 3.5;
+            segment.slope /= 10;
+        }
         forward = forward ? false : true;
 
         currentCornerCalc();
@@ -101,6 +109,10 @@ public class Ball {
         double adjacent = Math.abs(segment.begining.x - currentCorner.x);
 
         segment = new LineSegment(centerPos.x, centerPos.y, forward ? centerPos.x + adjacent : centerPos.x - adjacent, segment.begining.y);
+        if (segment.slope > 10) {
+            updateRate = 10 * updateRate < 3.5 ? 10 * updateRate : 3.5;
+            segment.slope /= 10;
+        }
 
         currentCornerCalc();
     }
@@ -108,7 +120,7 @@ public class Ball {
     //?
     public void move() {
         //new x and y
-        double newX = centerPos.x + (forward ? updateRate : updateRate * -1); //(toCenteralCoordinatesX(x) + (forward ? updateRate: updateRate*-1));
+        double newX = centerPos.x + (forward ? 1 : -1); //(toCenteralCoordinatesX(x) + (forward ? updateRate: updateRate*-1));
         double segmentYAt = segment.yAt(newX);
         System.out.println("we are moving the x to " + newX + " and the y to " + segmentYAt);
 

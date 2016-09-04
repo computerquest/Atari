@@ -12,12 +12,6 @@ import javafx.util.Duration;
 import java.util.LinkedList;
 import java.util.Random;
 
-/*GOALS
-Momentum on ball
-    adds another update rate for each contact not slider
-Slider velocity
-    a multiplier on the slider based on the pixels it moves a second
- */
 public class Attari {
     LinkedList<Rectangle> rectangle = new LinkedList(); //all the rectangles
     Ball ball;
@@ -35,17 +29,21 @@ public class Attari {
         ball = new Ball(graphics);
         setUp();
 
-        double time = 500;
+        double time = 100;
         //starts a new thread to move the ball every x millis
         interval = new Timeline(new KeyFrame(Duration.millis(time), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                System.out.println(ball.updateRate + " " + ball.segment.slope);
+                interval.setRate(ball.updateRate);
                 moveBall();
                 slider.velocity = Math.abs(slider.lastPos.x - slider.beginX) / time;
             }
         }));
+
         interval.setCycleCount(Timeline.INDEFINITE);
         interval.play();
+
         interval.setRate(2);
     }
 
@@ -87,7 +85,7 @@ public class Attari {
 
             ball.centerPos.x = ball.endX > canvas.getWidth() ? canvas.getWidth() - ball.width : 0;
             ball.centerPos.y = ball.segment.yAt(ball.centerPos.x);
-            ball.updateRate = ball.updateRate + .1 > 7 ? 7 : ball.updateRate + .1;
+            ball.updateRate = ball.updateRate + .1 > 12 ? 12 : ball.updateRate + .1;
 
             ball.onSideContact();
         }
@@ -96,19 +94,19 @@ public class Attari {
             System.out.println("hit top");
 
             ball.centerPos.y = canvas.getHeight();
-            ball.updateRate = ball.updateRate + .1 > 7 ? 7 : ball.updateRate + .1;
+            ball.updateRate = ball.updateRate + .1 > 12 ? 12 : ball.updateRate + .1;
 
             ball.onTopContact();
         }
 
-        boolean hitSomething = false;
+        //boolean hitSomething = false;
         //goes through all the rectangles and looks for a collision
         for (int i = 0; i < rectangle.size(); i++) {
             Rectangle currentNode = rectangle.get(i); //current rectangle being viewed
             if (((beginX >= currentNode.x & beginX <= currentNode.x + currentNode.width) | (endX >= currentNode.x & endX <= currentNode.x + currentNode.width))
                     && ((topY >= currentNode.bottom & topY <= currentNode.y) | (bottomY >= currentNode.bottom & bottomY <= currentNode.y))) {
                 System.out.println("hit brick");
-                ball.updateRate = ball.updateRate + .1 > 7 ? 7 : ball.updateRate + .1;
+                ball.updateRate = ball.updateRate + .1 > 12 ? 12 : ball.updateRate + .1;
 
                 //testing this out
                 /*if(!hitSomething) {
@@ -188,17 +186,21 @@ public class Attari {
                     yDif = Math.abs(ball.bottom - currentNode.y);
                 } else if (ball.segment.slope < 0 & ball.forward == false) {
                     xDif = Math.abs(ball.centerPos.x - currentNode.x + currentNode.width);
-                    yDif = Math.abs(ball.centerPos.y - currentNode.y - currentNode.height);
+                    yDif = Math.abs(ball.centerPos.y - currentNode.y); //- currentNode.height);
                 } else if (ball.segment.slope > 0 & ball.forward == false) {
                     xDif = Math.abs(ball.centerPos.x - currentNode.x + currentNode.width);
                     yDif = Math.abs(ball.centerPos.y - currentNode.y);
                 }
 
-                if (xDif < yDif) {//(yChecker & !xChecker) {//
+                if (xDif < yDif) {//(yChecker & !xChecker) {///
                     System.out.println("hit brick side");
                     ball.onSideContact();
                 } else {//if (yChecker & xChecker) {//else {//
                     System.out.println("hit brick top");
+                    /*used to make the y the max of the box hit works well MAY CAUSE ISSUES*/
+                    double yDifTop = Math.abs(ball.centerPos.y - currentNode.bottom);
+                    double yDifBot = Math.abs(currentNode.y - ball.bottom);
+                    ball.centerPos.y = yDifTop >= yDifBot ? currentNode.y + ball.height : currentNode.bottom;
                     ball.onTopContact();
                 }
 
