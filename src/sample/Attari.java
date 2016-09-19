@@ -34,7 +34,6 @@ public class Attari {
         interval = new Timeline(new KeyFrame(Duration.millis(time), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println(ball.updateRate + " " + ball.segment.slope);
                 interval.setRate(ball.updateRate);
                 moveBall();
                 slider.velocity = Math.abs(slider.lastPos.x - slider.beginX) / time;
@@ -65,6 +64,9 @@ public class Attari {
             //need to get the hit position on the slider based on the current corner of the ball
             ball.onSliderContact(sliderContact, slider.velocity);
             ball.move();
+
+            score--;
+            scoreText.update(Double.toString(score));
             return;
         }
 
@@ -99,17 +101,16 @@ public class Attari {
             ball.onTopContact();
         }
 
-        //boolean hitSomething = false;
+        boolean hitSomething = false;
         //goes through all the rectangles and looks for a collision
         for (int i = 0; i < rectangle.size(); i++) {
             Rectangle currentNode = rectangle.get(i); //current rectangle being viewed
             if (((beginX >= currentNode.x & beginX <= currentNode.x + currentNode.width) | (endX >= currentNode.x & endX <= currentNode.x + currentNode.width))
                     && ((topY >= currentNode.bottom & topY <= currentNode.y) | (bottomY >= currentNode.bottom & bottomY <= currentNode.y))) {
-                System.out.println("hit brick");
                 ball.updateRate = ball.updateRate + .1 > 12 ? 12 : ball.updateRate + .1;
 
                 //testing this out
-                /*if(!hitSomething) {
+                if (!hitSomething) {
                     double cornerXdif = ball.centerPos.x - ball.currentCorner.x; //probably don't need this one
                     double cornerYdif = ball.centerPos.y - ball.currentCorner.y;
 
@@ -127,11 +128,27 @@ public class Attari {
 
                     boolean yChecker = (ball.centerPos.y <= currentNode.y & ball.centerPos.y >= currentNodeEndY) | (ball.bottom <= currentNode.y & ball.bottom >= currentNodeEndY);
                     boolean xChecker = (ball.centerPos.x >= currentNode.x & ball.centerPos.x <= currentNode.x + currentNode.width & ball.endX >= currentNode.x & ball.endX <= currentNode.x + currentNode.width);
+                    //this was is super easy and works well except that current corner can ignore somethings
 
-                    if (yChecker & !xChecker) {//(xDif < yDif) {
+                    double xDif = 0;
+                    double yDif = 0;
+                    if (ball.segment.slope > 0 & ball.forward == true) {
+                        xDif = Math.abs(ball.endX - currentNode.x);
+                        yDif = Math.abs(ball.centerPos.y - currentNode.bottom);
+                    } else if (ball.segment.slope < 0 & ball.forward == true) {
+                        xDif = Math.abs(ball.endX - currentNode.x);
+                        yDif = Math.abs(ball.bottom - currentNode.y);
+                    } else if (ball.segment.slope < 0 & ball.forward == false) {
+                        xDif = Math.abs(ball.centerPos.x - currentNode.x + currentNode.width);
+                        yDif = Math.abs(ball.centerPos.y - currentNode.bottom);
+                    } else if (ball.segment.slope > 0 & ball.forward == false) {
+                        xDif = Math.abs(ball.centerPos.x - currentNode.x + currentNode.width);
+                        yDif = Math.abs(ball.bottom - currentNode.y);//yDif = Math.abs(ball.centerPos.y - currentNode.y);
+                    }
+                    if (xDif < yDif) {
                         System.out.println("hit brick side");
                         ball.onSideContact();
-                    } else if (yChecker & xChecker) {//else {//
+                    } else {
                         System.out.println("hit brick top");
                         ball.onTopContact();
                     }
@@ -143,8 +160,9 @@ public class Attari {
 
                     hitSomething = true;
                 } else {
+                    scoreText.update(Double.toString((score += 30)));
                     rectangle.get(i).delete();
-                }*/
+                }
 
                 //PROVEN WORKS
                 //need to find if it is hitting top or side
@@ -153,6 +171,7 @@ public class Attari {
                 if the bottom is inside the top of the brick then it is coming from the top
                 if the brick is getting hit by only one side and the y
                  */
+                /*
                 double cornerXdif = ball.centerPos.x - ball.currentCorner.x; //probably don't need this one
                 double cornerYdif = ball.centerPos.y - ball.currentCorner.y;
 
@@ -197,7 +216,7 @@ public class Attari {
                     ball.onSideContact();
                 } else {//if (yChecker & xChecker) {//else {//
                     System.out.println("hit brick top");
-                    /*used to make the y the max of the box hit works well MAY CAUSE ISSUES*/
+                    //used to make the y the max of the box hit works well MAY CAUSE ISSUES
                     double yDifTop = Math.abs(ball.centerPos.y - currentNode.bottom);
                     double yDifBot = Math.abs(currentNode.y - ball.bottom);
                     ball.centerPos.y = yDifTop >= yDifBot ? currentNode.y + ball.height : currentNode.bottom;
@@ -231,7 +250,7 @@ public class Attari {
             //adds the rectangles left to right
             for (int box = 0; box <= 15; box++, x = x + 50) {
                 //draws the rectangle and adds it to the array
-                rectangle.add(new Rectangle(graphics, x, y, 40, 32, Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255)), true));
+                rectangle.add(new Rectangle(graphics, x, y, 40, 32, Color.hsb(rand.nextInt(360), .6 + (.4) * rand.nextDouble(), 1), true));
             }
         }
 

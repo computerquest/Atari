@@ -122,7 +122,7 @@ public class Ball {
         //new x and y
         double newX = centerPos.x + (forward ? 1 : -1); //(toCenteralCoordinatesX(x) + (forward ? updateRate: updateRate*-1));
         double segmentYAt = segment.yAt(newX);
-        System.out.println("we are moving the x to " + newX + " and the y to " + segmentYAt);
+        //System.out.println("we are moving the x to " + newX + " and the y to " + segmentYAt);
 
         rectangle.move(newX, segmentYAt); //moves the ball
 
