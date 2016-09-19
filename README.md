@@ -1,5 +1,5 @@
-# Attari
-An attari breakout game made with java.
+# Atari
+An atari breakout game made with java.
 The interface is made using javaFx.
 All of the blocks are drawn using javaFx canvas.
 
